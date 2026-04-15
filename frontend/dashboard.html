@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>UNSC SYSTEM</title>
+
+<style>
+body{
+    background-color:#050607;
+    background-image:
+        radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        radial-gradient(rgba(70,92,54,0.18) 1px, transparent 1px),
+        linear-gradient(135deg, rgba(255,255,255,0.03), rgba(0,0,0,0.2));
+    background-size:18px 18px, 27px 27px, 100% 100%;
+    background-position:0 0, 9px 9px, 0 0;
+    color:#dbe6ef;
+    font-family: Arial;
+    text-align:center;
+    margin:0;
+    min-height:100vh;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(106,126,79,0.2) 0 2px, transparent 3px),
+        radial-gradient(circle at 72% 30%, rgba(173,174,167,0.16) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 44% 68%, rgba(87,103,65,0.16) 0 2px, transparent 3px),
+        radial-gradient(circle at 82% 78%, rgba(255,255,255,0.08) 0 1px, transparent 3px);
+    opacity:0.9;
+}
+
+.box{
+    border:1px solid rgba(137,155,124,0.35);
+    background:rgba(10,13,12,0.92);
+    margin:20px;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.35);
+}
+
+.section-image{
+    width:260px;
+    max-width:100%;
+    border-radius:8px;
+    border:1px solid rgba(137,155,124,0.35);
+}
+
+.placeholder-input{
+    width:90%;
+    min-height:90px;
+    margin-top:10px;
+    border:1px solid rgba(137,155,124,0.35);
+    border-radius:8px;
+    padding:10px;
+    font-family: Arial;
+    color:#dbe6ef;
+    background:#0c1110;
+}
+
+.section-text{
+    max-width:760px;
+    margin:8px auto 12px;
+    line-height:1.45;
+}
+
+.section-add{
+    margin-top:10px;
+}
+
+.entries-list{
+    margin-top:12px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.entry-item{
+    border:1px solid rgba(137,155,124,0.35);
+    background:#0c1110;
+    border-radius:8px;
+    padding:12px;
+    text-align:left;
+}
+
+.entry-meta{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:center;
+    font-size:12px;
+    color:#a7b4c2;
+    margin-bottom:8px;
+}
+
+.entry-content{
+    white-space:pre-wrap;
+    line-height:1.45;
+}
+
+.entry-delete{
+    padding:6px 10px;
+    background:#8c1e1e;
+}
+
+.editor-panel{
+    display:none;
+    margin-top:10px;
+}
+
+.editor-panel textarea{
+    width:90%;
+    min-height:80px;
+    border:1px solid rgba(137,155,124,0.35);
+    border-radius:8px;
+    padding:10px;
+    font-family: Arial;
+    background:#0c1110;
+    color:#dbe6ef;
+}
+
+.editor-panel button{
+    margin-top:8px;
+}
+
+.danger-panel{
+    display:none;
+    margin-top:14px;
+}
+
+.danger-panel button{
+    margin:4px;
+}
+
+.danger-content{
+    margin-top:16px;
+    text-align:center;
+}
+
+.danger-title{
+    margin:14px 0 8px;
+    font-size:20px;
+}
+
+.danger-subtitle{
+    margin:10px 0 6px;
+    font-weight:bold;
+}
+
+.danger-text{
+    margin:4px auto 8px;
+    max-width:700px;
+    line-height:1.4;
+}
+
+.danger-image{
+    width:260px;
+    max-width:100%;
+    border-radius:8px;
+    border:1px solid rgba(137,155,124,0.35);
+    margin:6px;
+}
+
+button{
+    padding:10px;
+    border:none;
+    background:#2f3a27;
+    color:#f0f5ef;
+    cursor:pointer;
+    border-radius:6px;
+}
+
+#avatar{
+    width:200px;
+}
+
+.page-logo{
+    position:absolute;
+    top:15px;
+    left:15px;
+    width:90px;
+}
+
+.page-action{
+    position:static;
+    z-index:20;
+}
+
+.top-actions{
+    position:fixed;
+    top:15px;
+    right:15px;
+    display:flex;
+    gap:8px;
+    z-index:20;
+}
+
+.menu-toggle{
+    display:none;
+    position:fixed;
+    top:15px;
+    right:15px;
+    z-index:25;
+    font-size:20px;
+    line-height:1;
+}
+
+.action-panel{
+    position:fixed;
+    top:70px;
+    right:15px;
+    width:320px;
+    background:#0c1110;
+    border:1px solid rgba(137,155,124,0.35);
+    border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.35);
+    padding:14px;
+    display:none;
+    z-index:20;
+    text-align:left;
+}
+
+.action-panel select,
+.action-panel textarea{
+    width:100%;
+    border:1px solid rgba(137,155,124,0.35);
+    border-radius:8px;
+    padding:10px;
+    margin-top:8px;
+    font-family: Arial;
+    color:#dbe6ef;
+    background:#0c1110;
+    box-sizing:border-box;
+}
+
+.action-panel textarea{
+    min-height:100px;
+}
+
+.action-panel h3{
+    margin:0 0 6px;
+}
+
+.danger-actions{
+    display:flex;
+    gap:8px;
+}
+
+.danger-actions button{
+    margin:0;
+}
+
+.account-section{
+    margin-top:10px;
+    border-top:1px solid rgba(137,155,124,0.35);
+    padding-top:10px;
+}
+
+.account-section input,
+.account-section select{
+    width:100%;
+    border:1px solid rgba(137,155,124,0.35);
+    border-radius:8px;
+    padding:10px;
+    margin-top:8px;
+    font-family: Arial;
+    color:#dbe6ef;
+    background:#0c1110;
+    box-sizing:border-box;
+}
+
+.account-section button{
+    margin-top:8px;
+}
+
+.account-panel{
+    right:15px;
+}
+
+.auth-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(3,5,4,0.96);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+}
+
+.auth-card{
+    width:min(92vw, 420px);
+    border:1px solid rgba(137,155,124,0.45);
+    background:#0c1110;
+    border-radius:10px;
+    box-shadow:0 10px 28px rgba(0,0,0,0.45);
+    padding:18px;
+    text-align:left;
+}
+
+.auth-card h2{
+    margin:0 0 6px;
+}
+
+.auth-card p{
+    margin:4px 0 12px;
+    color:#a7b4c2;
+}
+
+.auth-card input{
+    width:100%;
+    margin-top:8px;
+    border:1px solid rgba(137,155,124,0.35);
+    border-radius:8px;
+    padding:10px;
+    font-family: Arial;
+    color:#dbe6ef;
+    background:#0c1110;
+    box-sizing:border-box;
+}
+
+.auth-card button{
+    margin-top:10px;
+}
+
+.auth-error{
+    color:#ff8f8f;
+    min-height:18px;
+    margin-top:8px;
+    font-size:13px;
+}
+
+h1{
+    margin-top:120px;
+}
+
+@media (max-width: 768px){
+    .page-logo{
+        width:74px;
+    }
+
+    .menu-toggle{
+        display:block;
+    }
+
+    .top-actions{
+        display:none;
+        flex-direction:column;
+        align-items:stretch;
+        top:62px;
+        right:10px;
+        width:180px;
+        background:#0c1110;
+        border:1px solid rgba(137,155,124,0.35);
+        border-radius:10px;
+        padding:8px;
+        box-shadow:0 6px 18px rgba(0,0,0,0.35);
+    }
+
+    .top-actions.open{
+        display:flex;
+    }
+
+    .top-actions .page-action{
+        width:100%;
+    }
+
+    .action-panel,
+    .account-panel{
+        top:112px;
+        right:10px;
+        width:min(92vw, 360px);
+        max-height:70vh;
+        overflow:auto;
+        box-sizing:border-box;
+    }
+
+    h1{
+        margin-top:105px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="authOverlay" class="auth-overlay">
+<div class="auth-card">
+<h2>Verificacion de seguridad</h2>
+<p>Para continuar, confirma usuario y contrasena.</p>
+<input id="authUser" placeholder="Usuario">
+<input id="authPass" type="password" placeholder="Contrasena">
+<button onclick="verifyDashboardAccess()">Entrar al dashboard</button>
+<div id="authError" class="auth-error"></div>
+</div>
+</div>
+
+<div id="appContent" style="display:none;">
+
+<img class="page-logo" src="images/unsc%20blanco.png" alt="UNSC logo blanco">
+<button class="menu-toggle" onclick="toggleMobileMenu()">☰</button>
+<div class="top-actions">
+<button class="page-action" onclick="toggleGlobalEditor()">Agregar nueva info</button>
+<button class="page-action" onclick="toggleAccountPanel()">Cuenta</button>
+</div>
+
+<div id="globalEditor" class="action-panel">
+<h3>Agregar info</h3>
+<label for="targetSection">Seccion</label>
+<select id="targetSection">
+<option value="unsc">Informacion UNSC</option>
+<option value="spartan">Que es un Spartan</option>
+<option value="armas">Armas de la humanidad</option>
+<option value="rangos">Rangos de la UNSC</option>
+<option value="danger-banished">Peligros: Desterrados</option>
+<option value="danger-covenant">Peligros: Covenant</option>
+<option value="danger-flood">Peligros: Flood</option>
+</select>
+<textarea id="globalContent" placeholder="Escribe la nueva informacion"></textarea>
+<button onclick="saveGlobalSectionInfo()">Guardar info</button>
+</div>
+
+<div id="accountPanel" class="action-panel account-panel">
+<h3>Cuenta</h3>
+<button onclick="logoutAccount()">Salir de cuenta</button>
+<button onclick="toggleSettings()">Configuracion</button>
+<button onclick="toggleMissionControl()">Zona de Comando</button>
+
+<div id="settingsPanel" class="account-section" style="display:none;">
+<h3>Configuracion de cuenta</h3>
+<p id="accountUserInfo"></p>
+<p id="currentAvatarType"></p>
+<input id="currentPass" type="password" placeholder="Contraseña actual (obligatoria)">
+
+<div class="account-section">
+<label for="newUsername">Cambiar nombre</label>
+<input id="newUsername" placeholder="Nuevo nombre de usuario">
+<button onclick="changeUsername()">Guardar nombre</button>
+</div>
+
+<div class="account-section">
+<label for="newPassword">Cambiar contraseña</label>
+<input id="newPassword" type="password" placeholder="Nueva contraseña">
+<button onclick="changePassword()">Guardar contraseña</button>
+</div>
+
+<div class="account-section">
+<label for="newAvatar">Cambiar imagen</label>
+<select id="newAvatar">
+<option value="spartan">Spartan</option>
+<option value="elite">Elite</option>
+</select>
+<button onclick="changeAvatar()">Guardar imagen</button>
+</div>
+
+</div>
+</div>
+
+<div id="missionPanel" class="action-panel account-panel" style="display:none;">
+<h3>Zona de Comando - Reportes de Misiones</h3>
+<button onclick="closeMissionPanel()" style="margin-bottom:10px; width:100%;">← Cerrar</button>
+
+<div class="account-section">
+<label for="missionName">Nombre de Mision</label>
+<input id="missionName" placeholder="Nombre de la mision">
+</div>
+
+<div class="account-section">
+<label for="missionDesc">Descripcion</label>
+<textarea id="missionDesc" placeholder="Descripcion de la mision" style="min-height:60px;"></textarea>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+<select id="missionState">
+<option value="pendiente">Pendiente</option>
+<option value="en-progreso">En Progreso</option>
+<option value="completada">Completada</option>
+</select>
+<select id="missionPriority">
+<option value="baja">Prioridad: Baja</option>
+<option value="media" selected>Prioridad: Media</option>
+<option value="alta">Prioridad: Alta</option>
+</select>
+</div>
+
+<input id="missionAssigned" placeholder="Asignado a" style="margin-top:8px;">
+<button onclick="createMission()" style="margin-top:8px; width:100%;">Registrar Mision</button>
+
+<h4 style="margin-top:16px; color:#a7b4c2;">Misiones Activas</h4>
+<div id="missionsList" style="display:grid; gap:8px; margin-top:8px;"></div>
+</div>
+
+<h1>SISTEMA UNSC</h1>
+
+<div class="box">
+<h2>Bienvenido Soldado UNSC</h2>
+<h2 id="user"></h2>
+<img id="avatar">
+</div>
+
+<div class="box">
+<h2>Informacion UNSC</h2>
+<p id="section-unsc-text" class="section-text">La UNSC es el principal comando militar de la humanidad, encargado de proteger colonias, rutas espaciales y la Tierra frente a amenazas alienigenas.</p>
+<button class="section-add" onclick="openEditor('unsc')">Agregar info aqui</button>
+<div id="entries-unsc" class="entries-list"></div>
+</div>
+
+<div class="box">
+<h2>Que es un Spartan</h2>
+<p id="section-spartan-text" class="section-text">Los Spartans son supersoldados mejorados para defender a la humanidad.</p>
+<img class="section-image" src="images/Spartan2.jpg" alt="Spartan II">
+<br>
+<button class="section-add" onclick="openEditor('spartan')">Agregar info aqui</button>
+<div id="entries-spartan" class="entries-list"></div>
+</div>
+
+<div class="box">
+<h2>Armas de la humanidad</h2>
+<p id="section-armas-text" class="section-text">La humanidad usa armamento tactico de la UNSC para operaciones terrestres y espaciales.</p>
+<img class="section-image" src="images/armas.jpg" alt="Armas UNSC">
+<br>
+<button class="section-add" onclick="openEditor('armas')">Agregar info aqui</button>
+<div id="entries-armas" class="entries-list"></div>
+</div>
+
+<div class="box">
+<h2>Rangos de la UNSC</h2>
+<p id="section-rangos-text" class="section-text">Los rangos organizan la cadena de mando para mantener disciplina y coordinacion en combate.</p>
+<img class="section-image" src="images/rangos.jpg" alt="Rangos UNSC">
+<br>
+<button class="section-add" onclick="openEditor('rangos')">Agregar info aqui</button>
+<div id="entries-rangos" class="entries-list"></div>
+</div>
+
+<div class="box">
+<h2>Amenazas</h2>
+<p id="section-peligros-text" class="section-text">Consulta amenazas activas para conocer facciones hostiles y su impacto en la humanidad.</p>
+
+<button onclick="toggleDangers()">Peligros de la humanidad</button>
+
+<div id="dangerPanel" class="danger-panel">
+<button onclick="banished()">Desterrados</button>
+<button onclick="covenant()">Covenant</button>
+<button onclick="flood()">Flood</button>
+</div>
+
+<div id="info" class="danger-content"></div>
+</div>
+
+</div>
+
+<script>
+
+let sectionEntries = [];
+let dashboardInitialized = false;
+
+const sectionMap = {
+unsc: 'entries-unsc',
+spartan: 'entries-spartan',
+armas: 'entries-armas',
+rangos: 'entries-rangos',
+'danger-banished': 'entries-danger-banished',
+'danger-covenant': 'entries-danger-covenant',
+'danger-flood': 'entries-danger-flood'
+};
+
+const editorLabels = {
+unsc: 'Informacion UNSC',
+spartan: 'Que es un Spartan',
+armas: 'Armas de la humanidad',
+rangos: 'Rangos de la UNSC',
+'danger-banished': 'Peligros: Desterrados',
+'danger-covenant': 'Peligros: Covenant',
+'danger-flood': 'Peligros: Flood'
+};
+
+function escapeHtml(text){
+return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function applyAvatarImage(avatarType){
+if(avatarType === 'elite'){
+    document.getElementById('avatar').src = 'images/elite.jpg';
+    return;
+}
+document.getElementById('avatar').src = 'images/spartan.jpg';
+}
+
+function avatarLabel(avatarType){
+return avatarType === 'elite' ? 'Elite' : 'Spartan';
+}
+
+function renderCurrentUser(){
+const currentUser = localStorage.getItem('user') || 'Invitado';
+const avatarType = localStorage.getItem('avatar') || 'spartan';
+document.getElementById('user').innerText = 'Usuario: ' + currentUser;
+applyAvatarImage(avatarType);
+}
+
+function refreshAccountSummary(){
+const currentUser = localStorage.getItem('user') || 'Invitado';
+const avatarType = localStorage.getItem('avatar') || 'spartan';
+document.getElementById('accountUserInfo').innerText = 'Cuenta activa: ' + currentUser;
+document.getElementById('currentAvatarType').innerText = 'Tipo actual: ' + avatarLabel(avatarType);
+document.getElementById('newAvatar').value = avatarType;
+}
+
+function initializeDashboard(){
+renderCurrentUser();
+refreshAccountSummary();
+loadSectionInfo();
+dashboardInitialized = true;
+}
+
+function verifyDashboardAccess(){
+const username = document.getElementById('authUser').value.trim();
+const password = document.getElementById('authPass').value;
+
+if(!username || !password){
+    document.getElementById('authError').innerText = 'Escribe usuario y contrasena';
+    return;
+}
+
+fetch('http://localhost:3000/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+})
+.then(res => res.json())
+.then(data => {
+    if (data.message && data.message.includes('Bienvenido')) {
+        localStorage.setItem('user', data.username || username);
+        localStorage.setItem('avatar', data.avatar || 'spartan');
+        sessionStorage.setItem('dashboardVerified', '1');
+        document.getElementById('authPass').value = '';
+        document.getElementById('authError').innerText = '';
+        document.getElementById('authOverlay').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+        history.replaceState({}, '', '/dashboard.html');
+        if (!dashboardInitialized) {
+            initializeDashboard();
+        } else {
+            renderCurrentUser();
+            refreshAccountSummary();
+            loadSectionInfo();
+        }
+    } else {
+        document.getElementById('authError').innerText = data.message || 'Credenciales incorrectas';
+    }
+})
+.catch(() => {
+    document.getElementById('authError').innerText = 'No se pudo verificar acceso';
+});
+}
+
+function toggleDangers(){
+const panel = document.getElementById("dangerPanel");
+panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+
+function toggleGlobalEditor(){
+const panel = document.getElementById("globalEditor");
+const accountPanel = document.getElementById('accountPanel');
+accountPanel.style.display = 'none';
+panel.style.display = panel.style.display === "block" ? "none" : "block";
+closeMobileMenu();
+}
+
+function openEditor(section){
+document.getElementById('targetSection').value = section;
+document.getElementById('globalEditor').style.display = 'block';
+}
+
+function toggleAccountPanel(){
+const panel = document.getElementById('accountPanel');
+const globalPanel = document.getElementById('globalEditor');
+const missionPanel = document.getElementById('missionPanel');
+globalPanel.style.display = 'none';
+missionPanel.style.display = 'none';
+panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+closeMobileMenu();
+}
+
+function toggleMobileMenu(){
+const actions = document.querySelector('.top-actions');
+actions.classList.toggle('open');
+}
+
+function closeMobileMenu(){
+const actions = document.querySelector('.top-actions');
+actions.classList.remove('open');
+}
+
+function toggleSettings(){
+const panel = document.getElementById('settingsPanel');
+panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+}
+
+function logoutAccount(){
+localStorage.removeItem('user');
+localStorage.removeItem('avatar');
+sessionStorage.removeItem('dashboardVerified');
+window.location.href = '/index.html';
+}
+
+function updateAccount(changes){
+const currentUsername = localStorage.getItem('user');
+const currentPassword = document.getElementById('currentPass').value;
+
+if(!currentPassword){
+    alert('Escribe tu contraseña actual');
+    return;
+}
+
+fetch('http://localhost:3000/account/update', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        currentUsername,
+        currentPassword,
+        ...changes
+    })
+})
+.then(res => res.json())
+.then(data => {
+    alert(data.message || 'Cuenta actualizada');
+    if(data.user){
+        if(data.user.username){
+            localStorage.setItem('user', data.user.username);
+        }
+        if(data.user.avatar){
+            localStorage.setItem('avatar', data.user.avatar);
+        }
+        renderCurrentUser();
+        refreshAccountSummary();
+    }
+    document.getElementById('currentPass').value = '';
+    document.getElementById('newUsername').value = '';
+    document.getElementById('newPassword').value = '';
+    loadSectionInfo();
+})
+.catch(() => alert('No se pudo actualizar la cuenta'));
+}
+
+function changeUsername(){
+const newUsername = document.getElementById('newUsername').value.trim();
+if(!newUsername){
+    alert('Escribe un nuevo nombre');
+    return;
+}
+updateAccount({ newUsername });
+}
+
+function changePassword(){
+const newPassword = document.getElementById('newPassword').value.trim();
+if(!newPassword){
+    alert('Escribe una nueva contraseña');
+    return;
+}
+updateAccount({ newPassword });
+}
+
+function changeAvatar(){
+const newAvatar = document.getElementById('newAvatar').value;
+updateAccount({ newAvatar });
+}
+
+function saveGlobalSectionInfo(){
+const section = document.getElementById('targetSection').value;
+const content = document.getElementById('globalContent').value.trim();
+if(!content){
+    alert("Escribe informacion antes de guardar");
+    return;
+}
+
+fetch('http://localhost:3000/section-info',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+        section,
+        content,
+        username: localStorage.getItem("user") || "desconocido"
+    })
+})
+.then(res => res.json())
+.then(data => {
+    if(data.message && data.message.includes("guardada")){
+        document.getElementById('globalContent').value = '';
+        document.getElementById('globalEditor').style.display = 'none';
+        loadSectionInfo();
+    }
+    alert(data.message || "Informacion guardada");
+})
+.catch(() => alert("No se pudo guardar la informacion"));
+}
+
+function loadSectionInfo(){
+fetch('http://localhost:3000/section-info')
+.then(res => res.json())
+.then(items => {
+    sectionEntries = items;
+    renderAllEntries();
+})
+.catch(() => {
+    // Si falla, se mantienen los textos por defecto
+});
+}
+
+function renderAllEntries(){
+Object.keys(sectionMap).forEach(section => renderSectionEntries(section));
+}
+
+function renderSectionEntries(section){
+const container = document.getElementById(sectionMap[section]);
+if(!container){
+    return;
+}
+
+const entries = sectionEntries.filter(item => item.section === section);
+const currentUser = localStorage.getItem('user') || 'desconocido';
+
+container.innerHTML = entries.map(item => {
+    const author = item.createdBy || item.updatedBy || 'desconocido';
+    const createdAt = new Date(item.createdAt || item.updatedAt || Date.now()).toLocaleString();
+    const canDelete = author === currentUser;
+    const safeContent = escapeHtml(item.content || '');
+    const encodedContent = encodeURIComponent(item.content || '');
+    return `
+        <div class="entry-item">
+            <div class="entry-meta">
+                <span>${escapeHtml(author)} · ${createdAt}</span>
+                <div class="danger-actions">
+                    ${canDelete ? `<button onclick="editSectionInfo('${item._id}', '${encodedContent}', '${section}')">Editar</button>` : ''}
+                    ${canDelete ? `<button class="entry-delete" onclick="deleteSectionInfo('${item._id}', '${section}')">Borrar</button>` : ''}
+                </div>
+            </div>
+            <div class="entry-content">${safeContent}</div>
+        </div>
+    `;
+}).join('');
+}
+
+function editSectionInfo(id, encodedContent){
+const username = localStorage.getItem('user') || 'desconocido';
+const currentContent = decodeURIComponent(encodedContent || '');
+const newContent = prompt('Edita tu informacion:', currentContent);
+
+if(newContent === null){
+    return;
+}
+
+const trimmed = newContent.trim();
+if(!trimmed){
+    alert('El contenido no puede quedar vacio');
+    return;
+}
+
+fetch(`http://localhost:3000/section-info/${id}`,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ username, content: trimmed })
+})
+.then(res => res.json())
+.then(data => {
+    alert(data.message || 'Informacion actualizada');
+    loadSectionInfo();
+})
+.catch(() => alert('No se pudo editar la informacion'));
+}
+
+function deleteSectionInfo(id, section){
+const username = localStorage.getItem('user') || 'desconocido';
+
+fetch(`http://localhost:3000/section-info/${id}`,{
+    method:'DELETE',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ username })
+})
+.then(res => res.json())
+.then(data => {
+    alert(data.message || 'Informacion eliminada');
+    loadSectionInfo();
+    if(section === 'danger-banished' || section === 'danger-covenant' || section === 'danger-flood'){
+        renderDangerSection(section);
+    }
+})
+.catch(() => alert('No se pudo eliminar la informacion'));
+}
+
+function renderDangerSection(section){
+const container = document.getElementById(sectionMap[section]);
+if(!container){
+    return;
+}
+
+// Se vuelve a pintar la entrada actual del panel de peligros correspondiente.
+renderSectionEntries(section);
+}
+
+// PELIGROS
+
+function flood(){
+document.getElementById("info").innerHTML =
+"<h3 class='danger-title'>Flood</h3>" +
+"<p class='danger-text'>El Flood es una amenaza biologica que infecta y consume toda forma de vida.</p>" +
+"<p class='danger-subtitle'>Forma parasitaria</p>" +
+"<p class='danger-text'>Forma basica del parasito que avanza en grandes oleadas.</p>" +
+"<img class='danger-image' src='images/flood1.jpg' alt='Flood 1'>" +
+"<p class='danger-subtitle'>Flood infectado</p>" +
+"<p class='danger-text'>Version mutada que toma cuerpos y los convierte en unidades de combate.</p>" +
+"<img class='danger-image' src='images/flood2.jpg' alt='Flood 2'>" +
+"<p class='danger-subtitle'>Unidos por el miedo</p>" +
+"<p class='danger-text'>Cuando el Flood crece, varias facciones quedan unidas por la necesidad de sobrevivir.</p>" +
+"<img class='danger-image' src='images/flood3.jpg' alt='Flood 3'>" +
+"<button class='section-add' onclick=\"openEditor('danger-flood')\">Agregar info aqui</button>" +
+"<div id='entries-danger-flood' class='entries-list'></div>";
+renderDangerSection('danger-flood');
+}
+
+function covenant(){
+document.getElementById("info").innerHTML =
+"<h3 class='danger-title'>Covenant</h3>" +
+"<p class='danger-text'>El Covenant es una alianza alienigena militar y religiosa enemiga de la humanidad.</p>" +
+"<p class='danger-subtitle'>Fuerzas Covenant</p>" +
+"<p class='danger-text'>Fuerzas principales del Covenant desplegadas en combate contra la UNSC.</p>" +
+"<img class='danger-image' src='images/covenan2.jpg' alt='Covenant 2'>" +
+"<p class='danger-subtitle'>Elites</p>" +
+"<p class='danger-text'>Los Elites son guerreros de alto rango con gran disciplina y tecnologia avanzada.</p>" +
+"<img class='danger-image' src='images/covenan3.jpg' alt='Covenant 3'>" +
+"<button class='section-add' onclick=\"openEditor('danger-covenant')\">Agregar info aqui</button>" +
+"<div id='entries-danger-covenant' class='entries-list'></div>";
+renderDangerSection('danger-covenant');
+}
+
+function banished(){
+document.getElementById("info").innerHTML =
+"<h3 class='danger-title'>Desterrados</h3>" +
+"<p class='danger-text'>Los Desterrados son una faccion brutal que busca poder y control en la galaxia.</p>" +
+"<p class='danger-subtitle'>Tropas desterradas</p>" +
+"<p class='danger-text'>Tropas principales de los Desterrados en ataques directos y ocupacion de territorios.</p>" +
+"<img class='danger-image' src='images/Desterado1.jpg' alt='Desterrado 1'>" +
+"<img class='danger-image' src='images/Desterado3.jpg' alt='Desterrado 3'>" +
+"<p class='danger-subtitle'>Atriox y jefe desterrado</p>" +
+"<p class='danger-text'>Atriox lidera la faccion y representa la maxima autoridad militar desterrada.</p>" +
+"<img class='danger-image' src='images/Desterado2.jpg' alt='Desterrado 2'>" +
+"<button class='section-add' onclick=\"openEditor('danger-banished')\">Agregar info aqui</button>" +
+"<div id='entries-danger-banished' class='entries-list'></div>";
+renderDangerSection('danger-banished');
+}
+
+loadSectionInfo();
+const rememberedUser = localStorage.getItem('user');
+if(rememberedUser){
+    document.getElementById('authUser').value = rememberedUser;
+}
+document.getElementById('authPass').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+        verifyDashboardAccess();
+    }
+});
+
+function requireDashboardAuth(){
+const params = new URLSearchParams(window.location.search);
+const hasAuthMarker = params.get('auth') === '1';
+const hasSessionMarker = sessionStorage.getItem('dashboardVerified') === '1';
+
+if(hasAuthMarker || hasSessionMarker){
+    document.getElementById('authOverlay').style.display = 'none';
+    document.getElementById('appContent').style.display = 'block';
+    if(hasAuthMarker){
+        history.replaceState({}, '', '/dashboard.html');
+        sessionStorage.setItem('dashboardVerified', '1');
+    }
+    initializeDashboard();
+    return;
+}
+
+document.getElementById('authOverlay').style.display = 'flex';
+document.getElementById('appContent').style.display = 'none';
+}
+
+// ZONA DE COMANDO - MISIONES
+function toggleMissionControl(){
+const panel = document.getElementById('missionPanel');
+const accountPanel = document.getElementById('accountPanel');
+const globalPanel = document.getElementById('globalEditor');
+globalPanel.style.display = 'none';
+accountPanel.style.display = 'none';
+panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+loadMissions();
+}
+
+function closeMissionPanel(){
+document.getElementById('missionPanel').style.display = 'none';
+}
+
+async function loadMissions(){
+try {
+    const res = await fetch('http://localhost:3000/misiones');
+    const misiones = await res.json();
+    const list = document.getElementById('missionsList');
+    
+    if(!Array.isArray(misiones) || misiones.length === 0){
+        list.innerHTML = '<p style="color:#a7b4c2;">No hay misiones registradas aun.</p>';
+        return;
+    }
+
+    const currentUser = localStorage.getItem('user') || 'desconocido';
+    
+    list.innerHTML = misiones.map(mision => {
+        const canDelete = mision.createdBy === currentUser;
+        const date = new Date(mision.createdAt).toLocaleString();
+        let stateColor = '#3d3521';
+        if(mision.estado === 'en-progreso') stateColor = '#4d3a1d';
+        if(mision.estado === 'completada') stateColor = '#1d4d2d';
+        
+        let priorityColor = '#3d3521';
+        if(mision.prioridad === 'media') priorityColor = '#4d3a1d';
+        if(mision.prioridad === 'alta') priorityColor = '#6d2d2d';
+        
+        return '<div style="border:1px solid rgba(146,182,133,0.4); padding:8px; border-radius:6px; background:#0d1412;">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
+                '<strong>' + escapeHtml(mision.nombre) + '</strong>' +
+                '<div style="display:flex; gap:4px;">' +
+                    '<span style="padding:2px 6px; border-radius:4px; font-size:11px; background:' + stateColor + ';">' + escapeHtml(mision.estado.toUpperCase()) + '</span>' +
+                    '<span style="padding:2px 6px; border-radius:4px; font-size:11px; background:' + priorityColor + ';">' + escapeHtml(mision.prioridad.toUpperCase()) + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<p style="margin:4px 0; font-size:13px; color:#a7b4c2;">' + escapeHtml(mision.descripcion) + '</p>' +
+            '<p style="margin:4px 0; font-size:12px; color:#9db5aa;">Asignado a: ' + escapeHtml(mision.asignadoA || 'no asignado') + ' | Por: ' + escapeHtml(mision.createdBy) + ' | ' + date + '</p>' +
+            '<div style="display:flex; gap:4px; margin-top:6px;">' +
+                '<select id="state_' + mision._id + '" onchange="updateMissionState(\'' + mision._id + '\')" style="flex:1; padding:4px; font-size:12px;">' +
+                    '<option value="pendiente" ' + (mision.estado === 'pendiente' ? 'selected' : '') + '>Pendiente</option>' +
+                    '<option value="en-progreso" ' + (mision.estado === 'en-progreso' ? 'selected' : '') + '>En Progreso</option>' +
+                    '<option value="completada" ' + (mision.estado === 'completada' ? 'selected' : '') + '>Completada</option>' +
+                '</select>' +
+                (canDelete ? '<button onclick="deleteMission(\'' + mision._id + '\')" style="background:#8e2a2a; padding:4px 8px; font-size:12px;">Eliminar</button>' : '') +
+            '</div>' +
+        '</div>';
+    }).join('');
+} catch(error){
+    document.getElementById('missionsList').innerHTML = '<p style="color:#8f8f8f;">Error al cargar misiones.</p>';
+}
+}
+
+async function createMission(){
+const nombre = (document.getElementById('missionName').value || '').trim();
+const descripcion = (document.getElementById('missionDesc').value || '').trim();
+const estado = document.getElementById('missionState').value;
+const prioridad = document.getElementById('missionPriority').value;
+const asignadoA = (document.getElementById('missionAssigned').value || '').trim();
+const createdBy = localStorage.getItem('user') || 'desconocido';
+
+if(!nombre || !descripcion){
+    alert('Nombre y descripcion obligatorios');
+    return;
+}
+
+try {
+    const res = await fetch('http://localhost:3000/misiones', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({nombre, descripcion, estado, prioridad, asignadoA, createdBy})
+    });
+    const data = await res.json();
+    
+    if(res.ok){
+        document.getElementById('missionName').value = '';
+        document.getElementById('missionDesc').value = '';
+        document.getElementById('missionAssigned').value = '';
+        document.getElementById('missionState').value = 'pendiente';
+        document.getElementById('missionPriority').value = 'media';
+        loadMissions();
+        alert('Mision registrada en Zona de Comando');
+    } else {
+        alert(data.message || 'Error al crear mision');
+    }
+} catch(error){
+    alert('Error de conexion');
+}
+}
+
+async function updateMissionState(misionId){
+const estado = document.getElementById('state_' + misionId).value;
+const username = localStorage.getItem('user') || 'desconocido';
+
+try {
+    const res = await fetch('http://localhost:3000/misiones/' + misionId, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({estado, username})
+    });
+    const data = await res.json();
+    
+    if(res.ok){
+        loadMissions();
+    } else {
+        alert(data.message || 'No se pudo actualizar');
+    }
+} catch(error){
+    alert('Error al actualizar mision');
+}
+}
+
+async function deleteMission(misionId){
+const username = localStorage.getItem('user') || 'desconocido';
+
+try {
+    const res = await fetch('http://localhost:3000/misiones/' + misionId, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username})
+    });
+    const data = await res.json();
+    
+    if(res.ok){
+        loadMissions();
+        alert('Mision eliminada');
+    } else {
+        alert(data.message || 'No se pudo eliminar');
+    }
+} catch(error){
+    alert('Error al eliminar mision');
+}
+}
+
+requireDashboardAuth();
+
+</script>
+
+</body>
+</html>

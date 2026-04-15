@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Crear Recluta</title>
+
+<style>
+body{
+    background:black;
+    color:#00f7ff;
+    text-align:center;
+}
+img{
+    width:100px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Crear Recluta UNSC</h1>
+
+<input id="user" placeholder="Nombre de usuario">
+
+<h3>Selecciona tu avatar</h3>
+
+<img src="images/spartan.jpg" onclick="selectAvatar('spartan')">
+<img src="images/elite.jpg" onclick="selectAvatar('elite')">
+
+<br><br>
+
+<button onclick="skip()">Saltar</button>
+
+<script>
+
+let avatar = "";
+
+function selectAvatar(type){
+    avatar = type;
+
+    const username = document.getElementById('user').value;
+
+    fetch('http://localhost:3000/register',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({username, avatar})
+    })
+    .then(()=> {
+        localStorage.setItem("user", username);
+        window.location.href = "dashboard.html";
+    });
+}
+
+function skip(){
+    window.location.href = "dashboard.html";
+}
+
+</script>
+
+</body>
+</html>

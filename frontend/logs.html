@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>UNSC Access</title>
+    <style>
+        body {
+            background-color:#050607;
+            background-image:
+                radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                radial-gradient(rgba(70,92,54,0.18) 1px, transparent 1px),
+                linear-gradient(135deg, rgba(255,255,255,0.03), rgba(0,0,0,0.2));
+            background-size:18px 18px, 27px 27px, 100% 100%;
+            background-position:0 0, 9px 9px, 0 0;
+            color: #dbe6ef;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            min-height:100vh;
+            margin:0;
+            padding-top:120px;
+        }
+        body::before {
+            content:"";
+            position:fixed;
+            inset:0;
+            pointer-events:none;
+            background:
+                radial-gradient(circle at 18% 20%, rgba(106,126,79,0.18) 0 2px, transparent 3px),
+                radial-gradient(circle at 72% 30%, rgba(173,174,167,0.16) 0 1.5px, transparent 3px),
+                radial-gradient(circle at 44% 68%, rgba(87,103,65,0.14) 0 2px, transparent 3px),
+                radial-gradient(circle at 82% 78%, rgba(255,255,255,0.08) 0 1px, transparent 3px);
+            opacity:0.9;
+        }
+        input {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid rgba(137,155,124,0.45);
+            background: rgba(8,12,10,0.92);
+            color: #dbe6ef;
+            border-radius:6px;
+        }
+        button {
+            padding: 10px;
+            border: 1px solid rgba(137,155,124,0.45);
+            background:#2f3a27;
+            color:#f0f5ef;
+            cursor: pointer;
+            border-radius:6px;
+        }
+        .page-logo{
+            position:fixed;
+            top:15px;
+            left:15px;
+            width:90px;
+            z-index:10;
+        }
+        .back-btn{
+            position:fixed;
+            top:15px;
+            right:15px;
+            z-index:10;
+        }
+    </style>
+</head>
+<body>
+
+    <img class="page-logo" src="images/unsc%20blanco.png" alt="UNSC logo blanco">
+    <button class="back-btn" onclick="goBack()">← Regresar</button>
+
+    <h1>ACCESO UNSC</h1>
+
+    <input id="user" placeholder="Usuario"><br>
+    <input id="pass" type="password" placeholder="Contraseña">
+    <button onclick="togglePass()">Ver</button>
+
+    <br><br>
+    <button onclick="login()">Entrar</button>
+
+    <script>
+        function togglePass() {
+            const p = document.getElementById('pass');
+            p.type = p.type === "password" ? "text" : "password";
+        }
+
+        function login() {
+            const username = document.getElementById('user').value;
+            const password = document.getElementById('pass').value;
+
+            fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.message.includes("Bienvenido")) {
+                    // Guardar datos en localStorage
+                    localStorage.setItem("user", data.username || username);
+                    localStorage.setItem("avatar", data.avatar);
+                    sessionStorage.setItem('dashboardVerified', '1');
+
+                    // Redireccion al dashboard
+                    window.location.href = "/dashboard.html?auth=1";
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '/index.html';
+            }
+        }
+    </script>
+
+</body>
+</html>

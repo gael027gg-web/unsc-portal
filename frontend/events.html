@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitacora de Eventos UNSC</title>
+<style>
+:root {
+    --bg-1: #07110f;
+    --bg-2: #111d1a;
+    --card: rgba(8, 12, 11, 0.9);
+    --line: rgba(146, 182, 133, 0.4);
+    --text: #dce8e2;
+    --muted: #9db5aa;
+    --accent: #8bbf67;
+    --danger: #8e2a2a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background:
+        radial-gradient(circle at 20% 15%, rgba(139, 191, 103, 0.12), transparent 30%),
+        radial-gradient(circle at 80% 10%, rgba(173, 191, 157, 0.12), transparent 25%),
+        linear-gradient(140deg, var(--bg-1), var(--bg-2));
+}
+
+header {
+    padding: 28px 20px 12px;
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+h1 {
+    margin: 0;
+    letter-spacing: 0.4px;
+}
+
+p {
+    color: var(--muted);
+}
+
+.container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 12px 20px 28px;
+    display: grid;
+    gap: 16px;
+}
+
+.card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    padding: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #0d1412;
+    color: var(--text);
+}
+
+textarea { min-height: 100px; resize: vertical; }
+
+.actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    color: var(--text);
+    background: #253a2d;
+    cursor: pointer;
+}
+
+button.secondary { background: #1b2a22; }
+button.danger { background: var(--danger); }
+
+.list {
+    display: grid;
+    gap: 10px;
+}
+
+.event-item {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    background: #0d1412;
+}
+
+.meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    border: 1px solid var(--line);
+}
+
+footer {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 4px 20px 20px;
+}
+
+@media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header>
+    <h1>Bitacora de Eventos UNSC</h1>
+    <p>Registro simple de eventos con frontend web, backend Node.js y MongoDB.</p>
+</header>
+
+<main class="container">
+    <section class="card">
+        <h2>Registrar evento</h2>
+        <div class="grid">
+            <input id="username" placeholder="Usuario" />
+            <select id="severity">
+                <option value="baja">Severidad: Baja</option>
+                <option value="media" selected>Severidad: Media</option>
+                <option value="alta">Severidad: Alta</option>
+            </select>
+        </div>
+        <div class="actions" style="margin-top: 10px;">
+            <input id="title" placeholder="Titulo del evento" />
+        </div>
+        <div class="actions">
+            <textarea id="description" placeholder="Descripcion del evento"></textarea>
+        </div>
+        <div class="actions">
+            <button onclick="createEvent()">Guardar evento</button>
+            <button class="secondary" onclick="window.location.href='index.html'">Volver al inicio</button>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Eventos registrados</h2>
+        <div id="events" class="list"></div>
+    </section>
+</main>
+
+<footer>
+    <p id="status"></p>
+</footer>
+
+<script>
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function setStatus(message) {
+    document.getElementById('status').innerText = message;
+}
+
+function severityBadge(severity) {
+    const value = (severity || 'media').toLowerCase();
+    if (value === 'alta') return '<span class="badge" style="background:#4d1d1d">Alta</span>';
+    if (value === 'baja') return '<span class="badge" style="background:#1d3f2b">Baja</span>';
+    return '<span class="badge" style="background:#3d3521">Media</span>';
+}
+
+async function loadEvents() {
+    try {
+        const res = await fetch('http://localhost:3000/events');
+        const items = await res.json();
+        const list = document.getElementById('events');
+
+        if (!Array.isArray(items) || items.length === 0) {
+            list.innerHTML = '<p>Aun no hay eventos registrados.</p>';
+            return;
+        }
+
+        const username = (document.getElementById('username').value || '').trim();
+
+        list.innerHTML = items.map(item => {
+            const author = item.createdBy || 'anonimo';
+            const canDelete = username && username === author;
+            const date = new Date(item.createdAt || Date.now()).toLocaleString();
+
+            return '<article class="event-item">' +
+                '<div class="meta">' +
+                    '<span>' + escapeHtml(author) + ' · ' + date + '</span>' +
+                    severityBadge(item.severity) +
+                '</div>' +
+                '<h3>' + escapeHtml(item.title || '') + '</h3>' +
+                '<p>' + escapeHtml(item.description || '') + '</p>' +
+                (canDelete ? '<button class="danger" onclick="deleteEvent(\'' + item._id + '\')">Eliminar</button>' : '') +
+            '</article>';
+        }).join('');
+    } catch (error) {
+        setStatus('No se pudieron cargar los eventos.');
+    }
+}
+
+async function createEvent() {
+    const createdBy = (document.getElementById('username').value || '').trim() || 'anonimo';
+    const title = (document.getElementById('title').value || '').trim();
+    const description = (document.getElementById('description').value || '').trim();
+    const severity = document.getElementById('severity').value;
+
+    if (!title || !description) {
+        setStatus('Debes escribir titulo y descripcion.');
+        return;
+    }
+
+    try {
+        const res = await fetch('http://localhost:3000/events', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, description, severity, createdBy })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            setStatus(data.message || 'No se pudo guardar el evento.');
+            return;
+        }
+
+        document.getElementById('title').value = '';
+        document.getElementById('description').value = '';
+        setStatus('Evento guardado correctamente.');
+        loadEvents();
+    } catch (error) {
+        setStatus('Error de red al guardar el evento.');
+    }
+}
+
+async function deleteEvent(id) {
+    const username = (document.getElementById('username').value || '').trim() || 'anonimo';
+
+    try {
+        const res = await fetch('http://localhost:3000/events/' + id, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            setStatus(data.message || 'No se pudo eliminar el evento.');
+            return;
+        }
+
+        setStatus('Evento eliminado.');
+        loadEvents();
+    } catch (error) {
+        setStatus('Error de red al eliminar el evento.');
+    }
+}
+
+loadEvents();
+</script>
+</body>
+</html>
