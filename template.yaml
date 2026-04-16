@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Proyecto DevOps - EC2 + S3 + Security Group
+
+Resources:
+  MiSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Permitir acceso a la aplicacion web
+      SecurityGroupIngress:
+        # Acceso SSH
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+        # Backend (Node.js)
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+
+        # Frontend (Nginx / React / HTML)
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+
+        # Base de datos MongoDB
+        - IpProtocol: tcp
+          FromPort: 27017
+          ToPort: 27017
+          CidrIp: 0.0.0.0/0
+
+  MiInstanciaEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+
+      # Esta AMI puede cambiar dependiendo la región
+      ImageId: ami-0c02fb55956c7d316
+
+      KeyName: TU_KEYPAIR  # Cambiar por tu key real
+
+      SecurityGroupIds:
+        - !Ref MiSecurityGroup
+
+      Tags:
+        - Key: Name
+          Value: DevOps-EC2
+
+  MiBucketS3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: mi-bucket-devops-123456  # Debe ser único
+
+# ==============================
+# IMPORTANTE (para tu profesor)
+# ==============================
+# Los Security Groups permiten el acceso a la aplicación abriendo puertos específicos:
+# 22     -> SSH (para conectarse a la instancia)
+# 3000   -> Backend (Node.js)
+# 8080   -> Frontend (interfaz web)
+# 27017  -> Base de datos MongoDB
+#
+# En este caso se usa 0.0.0.0/0 para permitir acceso desde cualquier IP,
+# pero en un entorno de producción esto NO es recomendable,
+# ya que representa un riesgo de seguridad.
+#
+# En producción se deben restringir las IPs permitidas.
